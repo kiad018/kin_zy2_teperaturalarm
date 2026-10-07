@@ -6,9 +6,9 @@ Egyszerű ROS 2 C++ csomag környezeti adatok (hőmérséklet, relatív páratar
 
 ```mermaid
 flowchart LR
-    A["/sensor_node"] -->|/sensor/temperature<br/>sensor_msgs/msg/Temperature| B["/alarm_node"]
-    A -->|/sensor/humidity<br/>sensor_msgs/msg/RelativeHumidity| B
-    B -->|/alarm<br/>std_msgs/msg/String| C["(Terminál / Riasztások)"]
+    A["sensor_node"] -->|"/sensor/temperature (sensor_msgs/Temperature)"| B["alarm_node"]
+    A -->|"/sensor/humidity (sensor_msgs/RelativeHumidity)"| B
+    B -->|"/alarm (std_msgs/String)"| C["Terminál"]
 ```
 
 ## Működés leírása
