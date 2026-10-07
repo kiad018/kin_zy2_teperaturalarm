@@ -1,56 +1,31 @@
-# `ros2_cpp_template` package
-ROS 2 C++ package.  [![Static Badge](https://img.shields.io/badge/ROS_2-Humble-34aec5)](https://docs.ros.org/en/humble/)
-## Packages and build
+# kin_zy2_teperaturalarm package
 
-It is assumed that the workspace is `~/ros2_ws/`.
+Egyszerű ROS 2 C++ csomag környezeti adatok (hőmérsëklet, relatêv páratartalom) szimulására es küszöbérték-riasztásra ROS 2 Humble alatt.
 
-### Clone the packages
-``` r
-cd ~/ros2_ws/src
+3# Node-topic architektúra
+
+``mermaid
+flowchart LR
+    A["/sensor_node"] -->|/Sensor/temperature<br/>sensor_msgs/msg/Temperature| B["/alarm_node"]
+    A["/sensor_node"] -->|/Sensor/humidity<br/>sensor_msgs/msg/RelativeHumidity| B['/alarm_node']
+    B['/alarm_node'] -->|/alarm<br/>std_msgs/msg/String| C["(Termin�al / Riasztások)"]
 ```
-``` r
-git clone https://github.com/sze-info/ros2_cpp_template
-```
 
-### Build ROS 2 packages
-``` r
+## Mıködés leírása
+
+- j*/sensor_node**: 1 Hz frekvenciával publikál szimulált adatokat a `/sensor/temperature` és `/sensor/humidity` topicokra.
+- **/alarm_node**: Feliratkozik a figuelessre. Ha a hőmérsëklet 30 °C fölé nő, 15 °C alá esik, vagy a páratartalom 75% feletti, figyelmeztető uzenetet públikál az `/alarm` topicra.
+
+## Fordítás (Build)
+
+gbash
 cd ~/ros2_ws
-```
-``` r
-colcon build --packages-select ros2_cpp_template --symlink-install
+colcon build --packages-select kin_zy2_teperaturalarm --symlink-install
 ```
 
-<details>
-<summary> Don't forget to source before ROS commands.</summary>
+3# Futtatás
 
-``` bash
+``bash
 source ~/ros2_ws/install/setup.bash
+ros2 launch kin_zy2_teperaturalarm teperaturalarm.launch.py
 ```
-</details>
-
-``` r
-ros2 launch ros2_cpp_template launch_example1.launch.py
-```
-
-# Delete this part if you are using it as a template
-
-ROS 2 pacage template, to get started, use template by clicking on the Green button labeled [`Use this template`](https://github.com/sze-info/ros2_cpp_template/generate) / [`Create new repository`](https://github.com/sze-info/ros2_cpp_template/generate). 
-
-<p align="center"><img src="img/use_this_template01.png" width="60%" /></p>
-
-
-Let's assume 
-- your Github username is `mycoolusername`
-- your ROS 2 repo shold be `cool_ros2_package`
-
-Replace everything in the cloned repo:
-
-- `ros2_cpp_template` >> `cool_ros2_package` (the folder was already renamed after `Use this template`)
-- `sze-info` >> `mycoolusername`
-- find all `todo` strings and fill the blanks
-
-The easiest way is VS code:
-
-<p align="center"><img src="img/replace01.png" width="60%" /></p>
-
-Now `colcon build` your ROS 2 package and you can start wokring.
