@@ -9,6 +9,7 @@ flowchart LR
     A["/sensor_node"] -->|/sensor/temperature<br/>sensor_msgs/msg/Temperature| B["/alarm_node"]
     A -->|/sensor/humidity<br/>sensor_msgs/msg/RelativeHumidity| B
     B -->|/alarm<br/>std_msgs/msg/String| C["Terminál"]
+```
 
 ## Működés leírása
 
