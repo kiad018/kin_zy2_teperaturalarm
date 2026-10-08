@@ -6,6 +6,14 @@
 #include "sensor_msgs/msg/relative_humidity.hpp"
 #include "std_msgs/msg/string.hpp"
 
+// ANSI színkódok a látványos terminálhoz
+#define ANSI_RESET   "\033[0m"
+#define ANSI_RED     "\033[1;31m"
+#define ANSI_BLUE    "\033[1;34m"
+#define ANSI_YELLOW  "\033[1;33m"
+#define ANSI_GREEN   "\033[1;32m"
+#define ANSI_BOLD    "\033[1m"
+
 class AlarmNode : public rclcpp::Node {
 public:
   AlarmNode() : Node("alarm_node"), has_temp_(false), has_hum_(false) {
@@ -18,7 +26,7 @@ public:
       std::bind(&AlarmNode::hum_callback, this, std::placeholders::_1));
 
     alarm_pub_ = this->create_publisher<std_msgs::msg::String>("/alarm", 10);
-    RCLCPP_INFO(this->get_logger(), "AlarmNode elindult, adatok figyelese...");
+    RCLCPP_INFO(this->get_logger(), ANSI_BOLD "🚀 AlarmNode elindult, adatok figyelése..." ANSI_RESET);
   }
 
 private:
@@ -37,24 +45,29 @@ private:
   void check_status() {
     if (!has_temp_ || !has_hum_) return;
 
-    std::string alert = "";
+    std::string alert_raw = "";
+    std::string alert_display = "";
+
     if (last_temp_ > 30.0) {
-      alert += "[RIASZTAS: TUL MELEG (" + std::to_string(last_temp_).substr(0, 4) + " C)] ";
+      alert_raw += "[RIASZTAS: TUL MELEG (" + std::to_string(last_temp_).substr(0, 4) + " C)] ";
+      alert_display += ANSI_RED "🔥 [TÚL MELEG: " + std::to_string(last_temp_).substr(0, 4) + " °C]" ANSI_RESET " ";
     } else if (last_temp_ < 15.0) {
-      alert += "[RIASZTAS: TUL HIDEG (" + std::to_string(last_temp_).substr(0, 4) + " C)] ";
+      alert_raw += "[RIASZTAS: TUL HIDEG (" + std::to_string(last_temp_).substr(0, 4) + " C)] ";
+      alert_display += ANSI_BLUE "❄️  [TÚL HIDEG: " + std::to_string(last_temp_).substr(0, 4) + " °C]" ANSI_RESET " ";
     }
 
     if (last_hum_ > 0.75) {
-      alert += "[RIASZTAS: MAGAS PARATARTALOM (" + std::to_string(last_hum_ * 100.0).substr(0, 4) + " %)]";
+      alert_raw += "[RIASZTAS: MAGAS PARATARTALOM (" + std::to_string(last_hum_ * 100.0).substr(0, 4) + " %)]";
+      alert_display += ANSI_YELLOW "💧 [MAGAS PÁRA: " + std::to_string(last_hum_ * 100.0).substr(0, 4) + " %]" ANSI_RESET;
     }
 
-    if (!alert.empty()) {
+    if (!alert_raw.empty()) {
       auto out_msg = std_msgs::msg::String();
-      out_msg.data = alert;
+      out_msg.data = alert_raw;
       alarm_pub_->publish(out_msg);
-      RCLCPP_WARN(this->get_logger(), "%s", alert.c_str());
+      RCLCPP_WARN(this->get_logger(), "%s", alert_display.c_str());
     } else {
-      RCLCPP_INFO(this->get_logger(), "Minden ertek normalis tartomanyban.");
+      RCLCPP_INFO(this->get_logger(), ANSI_GREEN "✅ Minden érték normális (%.1f °C | %.1f %%)" ANSI_RESET, last_temp_, last_hum_ * 100.0);
     }
   }
 
