@@ -25,7 +25,7 @@ Feltételezzük, hogy a munkaterület: `~/ros2_ws/`.
 ```bash
 # Csomagok klónozása:
 cd ~/ros2_ws/src
-git clone [https://github.com/kiad018/kin_zy2_teperaturalarm.git](https://github.com/kiad018/kin_zy2_teperaturalarm.git)
+git clone https://github.com/kiad018/kin_zy2_teperaturalarm.git
 
 # Fordítás a workspace gyökeréből:
 cd ~/ros2_ws
